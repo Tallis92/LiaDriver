@@ -1,0 +1,15 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore dependencies
+vendor/
+node_modules/
+
+# Ignore environment and config files
+.env
+config.php
+
+# Ignore compiled assets and cache
+*.log
+cache/
