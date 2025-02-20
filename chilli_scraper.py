@@ -40,18 +40,18 @@ def scrape_products(x_current, x_target, position, xpath_template, target_url, p
                 if change_template == False:
                     try:
                         xpath = xpath_template.format(x_current=x_current, position=position) 
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+                        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
                         print("Product " + str(x_current) + " located at " + xpath + "!")
                     except:
                         change_template = True
                         xpath = xpath_template.format(x_current=x_current, position=position - 1)
                         print("Attempting to find the xpath at " + xpath + "...")
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+                        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
                         print("\033[93mDid not find the xpath, switched to xpath_template_alt\033[0m")
                         print(driver.current_url)
                 else:
                     xpath = xpath_template.format(x_current=x_current, position=position - 1)
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+                    WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
                     print("Product " + str(x_current) + " located at " + xpath + "!")
 
                 driver.implicitly_wait(5)
@@ -66,8 +66,11 @@ def scrape_products(x_current, x_target, position, xpath_template, target_url, p
                     description = driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div[4]/div/div[1]/div[3]/div/div/p[1]").text
                 except:
                     print("There was no product description!")
-                    description = "No description exists for this product..."            
-                price = driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div[3]/div[2]/div[1]/div[1]/div").text
+                    description = "No description exists for this product..."
+                try:
+                    price = driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div[3]/div[2]/div[1]/div[1]/div[2]/span[2]").text
+                except:
+                    price = driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div[3]/div[2]/div[1]/div/div[2]/span[2]").text
                 url = driver.current_url
                 product = [name, description, price, src, url]
                 product_list.append(product)
@@ -94,7 +97,6 @@ def scrape_products(x_current, x_target, position, xpath_template, target_url, p
                 print("\033[93m Standard xpath did not work, attempt to find /html/body/div[1]/div/main/div/div[2]/div[3]/div[2]/div/a[5] instead\033[0m")                                     
             print("\033[93mSuccessfully switched to " + driver.current_url + "\033[0m")
             x_current = 1
-        
     return product_list
 
 
@@ -108,3 +110,58 @@ xpath_template = "/html/body/div[1]/div/main/div/div[2]/div[2]/ul/li[{x_current}
 target_url = "https://www.chilli.se/m%C3%B6bler/bord/matbord-k%C3%B6ksbord"
 
 tables = scrape_products(x_current, x_target, position, xpath_template, target_url, tables, amount_of_pages, xpath_first_page)
+
+x_current = 1
+x_target = 24
+amount_of_pages = 3
+position = 6
+xpath_first_page = "/html/body/div[1]/div/main/div/div[2]/div[3]/div[2]/div/a[3]"
+xpath_template = "/html/body/div[1]/div/main/div/div[2]/div[2]/ul/li[{x_current}]/div/a"          
+target_url = "https://www.chilli.se/m%C3%B6bler/stolar/matstolar-k%C3%B6ksstolar"
+
+chairs = scrape_products(x_current, x_target, position, xpath_template, target_url, chairs, amount_of_pages, xpath_first_page)
+
+x_current = 1
+x_target = 24
+amount_of_pages = 3
+position = 6
+xpath_first_page = "/html/body/div[1]/div/main/div/div[2]/div[3]/div[2]/div/a[3]"
+xpath_template = "/html/body/div[1]/div/main/div/div[2]/div[2]/ul/li[{x_current}]/div/a"          
+target_url = "https://www.chilli.se/m%C3%B6bler/soffor"
+
+sofas = scrape_products(x_current, x_target, position, xpath_template, target_url, sofas, amount_of_pages, xpath_first_page)
+
+# Writes the products into extended tables
+if tables != None:
+    with open('chilli_tables.csv', mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Name", "Description", "Price", "Image URL", "Product URL"])  # Header row
+        for table in tables:
+            writer.writerow(table)
+        print("\033[92mData saved to chilli_tables.csv!\033[0m")
+else:
+    print("\033[91mThere was an error with saving chilli_tables file!\033[0m")
+
+if chairs != None:
+    with open('chilli_chairs.csv', mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Name", "Description", "Price", "Image URL", "Product URL"])  # Header row
+        for chair in chairs:
+            writer.writerow(chair)
+        print("\033[92mData saved to chilli_chairs.csv!\033[0m")
+else:
+    print("\033[91mThere was an error with saving chilli_chairs file!\033[0m")
+
+if sofas != None:
+    with open('chilli_sofas.csv', mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Name", "Description", "Price", "Image URL", "Product URL"])  # Header row
+        for sofa in sofas:
+            writer.writerow(sofa)
+        print("\033[92mData saved to chilli_sofas.csv!\033[0m")
+else:
+    print("\033[91mThere was an error with saving chilli_sofas file!\033[0m")
+
+driver.quit()
+    
+
