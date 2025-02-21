@@ -16,7 +16,7 @@ driver = webdriver.Firefox()
 
 # Passes through the cookies popup
 driver.get("https://www.chilli.se/inredning")
-driver.implicitly_wait(5)
+driver.implicitly_wait(0.5)
 driver.find_element(By.ID, "onetrust-accept-btn-handler").click()
 tables = []
 chairs = []
