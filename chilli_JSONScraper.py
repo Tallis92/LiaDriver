@@ -4,21 +4,23 @@ from bs4 import BeautifulSoup
 
 # Definiera kategorier och deras API-endpoints
 categories = {
-    "Soffor": "https://www.chilli.se/api/content/m%C3%B6bler/soffor",
-    "Stolar": "https://www.chilli.se/api/content/m%C3%B6bler/stolar",
-    "Bord": "https://www.chilli.se/api/content/m%C3%B6bler/bord"
+    "chilli_sofas_JSON": "https://www.chilli.se/api/content/m%C3%B6bler/soffor",
+    "chilli_chairs_JSON": "https://www.chilli.se/api/content/m%C3%B6bler/stolar",
+    "chilli_tables_JSON": "https://www.chilli.se/api/content/m%C3%B6bler/bord"
 }
 
 # Hämta och processa data för varje kategori
 for category, base_url in categories.items():
-    filename = f"{category.lower()}.csv"  # Skapar filnamn baserat på kategorin (soffor.csv, bord.csv, osv.)
+    # Skapar filnamn baserat på kategorin (soffor.csv, bord.csv, osv.)
+    filename = f"{category.lower()}.csv"  
 
     with open(filename, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Name", "Description", "Price", "Discount", "Href", "Image URL"])
 
-        for page in range(1, 4):  # Loopar igenom sidorna 1-3
-            json_url = f"{base_url}?page={page}"  # Lägger till paginering i URL
+        # Loopar igenom sidorna 1-3
+        for page in range(1, 4):  
+            json_url = f"{base_url}?page={page}" 
             response = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0"})
 
             if response.status_code == 200:
@@ -48,11 +50,11 @@ for category, base_url in categories.items():
                     except Exception:
                         description = "Ej angivet"
 
-                    # Skriv till CSV
                     writer.writerow([name, description, price, discount, href, image_url])
 
             print(f"Klar med {category} - Sida {page}")
 
-    print(f"✅ {filename} har sparats!")
+    print(f"{filename} har sparats!")
 
-print("🚀 Alla kategorier har sparats i sina egna CSV-filer!")
+print("Alla kategorier har sparats!")
+
