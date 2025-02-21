@@ -16,11 +16,12 @@ if response.status_code == 200:
         for product in data.get("products", []):
             namn = product.get("displayName", "Ej angivet")
             pris = product.get("price", {}).get("current", {}).get("inclVat", "Ej angivet")
+            description = product.get("description", "Ej angivet")
             rabatt = product.get("price", {}).get("discount", "Ej angivet")
             länk = "https://www.chilli.se" + product.get("url", "")
             #bild = "https://www.chilli.se" + product.get("images", [{}])[0].get("url", "")
 
-            writer.writerow([namn, pris, rabatt, länk])
+            writer.writerow([namn, pris, description, rabatt, länk])
 
     print("Alla produkter har sparats i 'soffor.csv'")
 else:
